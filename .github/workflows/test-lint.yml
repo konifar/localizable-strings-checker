@@ -1,0 +1,19 @@
+name: Test Lint Action
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Lint Action
+        uses: konifar/localizable-strings-checker@main
+        with:
+          project-root-path: "example"
+          base-lang-code: "ja"
