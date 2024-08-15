@@ -1,0 +1,12 @@
+"app_name"= "Localizable Strings Checker Example";
+
+/* Replacement characters */
+"replacable_string" = "%1$@ is one of the replacement strings.";
+"replacable_string_simple" = "%@ is a replacement string.";
+"replacable_int_day" = "%1$d days";
+"replacable_int_yen" = "%d yen";
+"replacable_double" = "%1$f people";
+"replacable_double_simple" = "%f people";
+
+/* Newline character */
+"new_line_example" = "First line of text\nSecond line of text";
