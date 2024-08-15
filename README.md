@@ -15,7 +15,32 @@ Detailed messages are output if errors are found.
 
 ## Usage
 
-WIP
+This works on GitHub Actions like below.
+
+```yml
+# .github/workflows/lint-localizable-strings.yml
+name: Lint Localizable.strings
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Lint Action
+        uses: konifar/localizable-strings-checker@v1
+        with:
+          # Project root path to check Localizable.strings. Default is current directory.
+          # project-root-path: "./"
+          # Base language code to check other language files like 'ja', 'en', prefix of xx.lproj
+          base-lang-code: "ja"
+```
 
 ## Contribution
 
