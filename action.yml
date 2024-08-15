@@ -1,0 +1,29 @@
+name: "Lint Localizable.strings"
+description: "Checks localization strings across different languages"
+
+inputs:
+  project-root-path:
+    description: "The project root path"
+    required: false
+    default: "./"
+  base-lang-code:
+    description: " The base language code to check other language files like 'ja', 'en', prefix of xx.lproj"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+
+    - name: Install dependencies
+      run: |
+        gem install bundler
+        bundle install
+      shell: bash
+
+    - run: |
+        ruby ./localizable_strings_checker.rb "${{ inputs.project-root-path }}" "${{ inputs.base-lang-code }}"
+      shell: bash
