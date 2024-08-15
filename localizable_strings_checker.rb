@@ -21,11 +21,9 @@ class LocalizableStringsChecker
     lang_dirs = Dir.glob("#{@root_dir}/**/Languages")
     puts "Target lang directories count: #{lang_dirs.length}"
 
-    lang_dirs.each do |lang_dir|
-      process_lang_dir(lang_dir)
-    end
+    lang_dirs.each { |lang_dir| process_lang_dir(lang_dir) }
 
-    unless @errors.empty?
+    if @errors.any?
       puts "🚨 Errors found:"
       @errors.each do |error|
         puts "  #{error[:file]}:"
@@ -46,15 +44,14 @@ class LocalizableStringsChecker
     base_path = "#{lang_dir}/#{@base_lang}.lproj/Localizable.strings"
     unless File.exist?(base_path)
       puts "  Error: base language file not found in #{base_path}."
-      add_error_message(base_path, "Base language file not found.")
+      return
     end
 
     base_file = Apfel.parse(base_path)
     
     puts "  Checking base file: #{base_path}"
-    has_single_percent = check_single_percent_string(base_file.key_values, base_path)
-    if has_single_percent
-      @errors << { file: base_path, messages: ["Base language file contains a single % character."] }
+    if check_single_percent_string(base_file.key_values, base_path)
+      add_error_message(base_path, "Base language file contains a single % character.")
     end
 
     # Process other languages
@@ -68,7 +65,6 @@ class LocalizableStringsChecker
   def process_other_file(other_file, base_file, lang_dir)
     puts "  Checking other file: #{other_file}"
 
-    # 言語ディレクトリ内のLocalizable.stringsファイルを探索
     Find.find(lang_dir) do |path|
       next unless path =~ /.*\.lproj\/Localizable.strings$/ && path !~ /#{@base_lang}\.lproj/
 
@@ -76,17 +72,16 @@ class LocalizableStringsChecker
       other_file = Apfel.parse(path)
       puts "    Loading #{path}, keys count: #{other_file.keys.length}"
 
-      # 各種チェックを実行
       perform_checks(base_file, other_file, path)
     end
   end
 
   def add_error_message(file, message)
-    existing_error = @errors.find { |error| error[:file] == file }
-    if existing_error
-      existing_error[:messages] << message
+    error = @errors.find { |e| e[:file] == file }
+    if error
+      error[:messages] << message
     else
-      @errors << { file: file, messages:[message] }
+      @errors << { file: file, messages: [message] }
     end
   end
 
@@ -94,24 +89,20 @@ class LocalizableStringsChecker
   # @param other_file [Apfel::Strings] 他言語ファイルの解析結果
   # @param path [String] 他言語ファイルのパス
   def perform_checks(base_file, other_file, path)
-    is_same_keys = check_same_keys(base_file.keys, other_file.keys, path)
-    unless is_same_keys
-      add_error_message(path, "Keys are not matched")
+    unless check_same_keys(base_file.keys, other_file.keys, path)
+      add_error_message(path, "Keys do not match")
     end
 
-    is_same_comments = check_same_comments(base_file.comments, other_file.comments, path)
-    unless is_same_comments
-      add_error_message(path, "Comments are not matched")
+    unless check_same_comments(base_file.comments, other_file.comments, path)
+      add_error_message(path, "Comments do not match")
     end
 
-    is_replace_strings = check_replace_strings(base_file.key_values, other_file.key_values, path)
-    unless is_replace_strings
-      add_error_message(path, "The number of replace strings are not matched")
+    unless check_replace_strings(base_file.key_values, other_file.key_values, path)
+      add_error_message(path, "The number of replacement strings do not match")
     end
 
-    has_single_percent = check_single_percent_string(other_file.key_values, path)
-    if has_single_percent
-      add_error_message(path, "Single percent characters are not matched")
+    if check_single_percent_string(other_file.key_values, path)
+      add_error_message(path, "Single percent characters do not match")
     end
   end
 
@@ -122,13 +113,11 @@ class LocalizableStringsChecker
   # @return [Boolean] Whether the keys match
   def check_same_keys(base_keys, other_keys, path)
     puts "    Checking for key consistency..."
-    sorted_base_keys = base_keys.sort
-    sorted_other_keys = other_keys.sort
-    is_same_keys = sorted_base_keys == sorted_other_keys
+    is_same_keys = base_keys.sort == other_keys.sort
     puts "      Keys match: #{is_same_keys}"
 
     unless is_same_keys
-      missing_keys = sorted_base_keys - sorted_other_keys
+      missing_keys = base_keys - other_keys
       if missing_keys.any?
         puts "      🚨 The following keys are only present in the base language file:"
         missing_keys.each { |key| puts "        - #{key}" }
@@ -144,16 +133,14 @@ class LocalizableStringsChecker
   # @return [Boolean] Whether the comments match
   def check_same_comments(base_comments, other_comments, path)
     puts "    Checking for comment consistency..."
-    sorted_base_comments = base_comments.sort
-    sorted_other_comments = other_comments.sort
-    is_same_comments = sorted_base_comments == sorted_other_comments
+    is_same_comments = base_comments.sort == other_comments.sort
     puts "      Comments match: #{is_same_comments}"
 
     unless is_same_comments
       missing_comment_keys = base_comments.keys - other_comments.keys
       if missing_comment_keys.any?
         puts "      🚨 The following comments are only present in the base language file:"
-        missing_comments.each { |comment| puts "        - #{comment}" }
+        missing_comment_keys.each { |comment| puts "        - #{comment}" }
       end
     end
     is_same_comments
@@ -193,24 +180,19 @@ class LocalizableStringsChecker
   # @param path [String] File path
   # @return [Boolean] Whether there are no improper '%' characters
   def check_single_percent_string(key_values, path)
-    puts "    Checking the single '%' characters exist..."
+    puts "    Checking if single '%' characters exist..."
 
     single_character_keys = key_values.map do |key_value|
       key, value = key_value.first
-      if value.match?(/(?<!%)%(?![%@dsf]|[0-9]+\$[@dsf])/)
-        key
-      end
-    end
+      key if value.match?(/(?<!%)%(?![%@dsf]|[0-9]+\$[@dsf])/)
+    end.compact
 
-    has_single_percent = single_character_keys.compact.any?
-    if has_single_percent
+    if single_character_keys.any?
       puts "      🚨 The following keys contain a single % character:"
-      single_character_keys.compact.each do |key|
-        puts "        - '#{key}' contains a single % character"
-      end
+      single_character_keys.each { |key| puts "        - '#{key}' contains a single % character" }
     end
 
-    has_single_percent
+    single_character_keys.any?
   end
 end
 
