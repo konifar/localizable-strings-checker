@@ -1,0 +1,12 @@
+"app_name"= "Localizable Strings Checker Example";
+
+/* Replacement characters */
+"replacable_string" = "%1$@ は置換文字列の1つです。";
+"replacable_string_simple" = "%@ は置換文字列です。";
+"replacable_int_day" = "%1$d日";
+"replacable_int_yen" = "%d円";
+"replacable_double" = "%1$f人";
+"replacable_double_simple" = "%f人";
+
+/* Newline character */
+"new_line_example" = "1行目のテキスト\n2行目のテキスト";
