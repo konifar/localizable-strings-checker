@@ -28,3 +28,7 @@ runs:
     - run: |
         ruby ./localizable_strings_checker.rb "${{ inputs.project-root-path }}" "${{ inputs.base-lang-code }}"
       shell: bash
+
+branding:
+  icon: 'check-square'
+  color: 'green'
