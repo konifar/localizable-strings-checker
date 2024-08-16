@@ -160,11 +160,11 @@ class LocalizableStringsChecker
   # @return [Boolean] Whether all special characters exist in the other language file
   def check_replace_strings(base_key_values, other_key_values, path)
     puts "    Checking for the presence of replacement and newline characters..."
-    regex = Regexp.union(SPECIAL_STRINGS.map { |str| Regexp.escape(str) })
+    regex = Regexp.union(SPECIAL_STRINGS)
 
     diff_list = base_key_values.each_with_object([]) do |key_value, list|
       key, value = key_value.first
-      matches = value.scan(regex).uniq
+      matches = value.scan(regex).uniq      
       next if matches.empty?
 
       other_value = other_key_values.find { |hash| hash.key?(key) }&.[](key)
