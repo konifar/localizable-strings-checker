@@ -1,5 +1,6 @@
-name: "Lint Localizable.strings"
-description: "Checks localization strings across different languages"
+name: Lint Localizable.strings
+author: konifar
+description: Checks localization strings across different language files
 
 inputs:
   project-root-path:
