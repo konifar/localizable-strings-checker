@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.0.2](https://github.com/konifar/localizable-strings-checker/compare/v0.0.1...v0.0.2) - 2024-08-16
+- Update action icon by @konifar in https://github.com/konifar/localizable-strings-checker/pull/12
+
 ## [v0.0.1](https://github.com/konifar/localizable-strings-checker/commits/v0.0.1) - 2024-08-16
 - Create lint script and examples by @konifar in https://github.com/konifar/localizable-strings-checker/pull/1
 - Refactor script by @konifar in https://github.com/konifar/localizable-strings-checker/pull/2
