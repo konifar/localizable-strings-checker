@@ -24,6 +24,7 @@ runs:
       run: |
         gem install bundler
         cd ${{ github.action_path }}
+        bundle config set --local path 'vendor/bundle'
         bundle install
       shell: bash
 
