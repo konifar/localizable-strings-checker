@@ -1,5 +1,7 @@
 # Changelog
 
+## [v0.0.5](https://github.com/konifar/localizable-strings-checker/compare/v0.0.4...v0.0.5) - 2024-08-16
+
 ## [v0.0.4](https://github.com/konifar/localizable-strings-checker/compare/v0.0.3...v0.0.4) - 2024-08-16
 
 ## [v0.0.3](https://github.com/konifar/localizable-strings-checker/compare/v0.0.2...v0.0.3) - 2024-08-16
