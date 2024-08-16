@@ -2,10 +2,10 @@ require 'rspec'
 require_relative '../localizable_strings_checker'
 
 RSpec.describe LocalizableStringsChecker do
-  describe 'SPECIAL_STRINGS' do
+  describe 'REPLACE_STRINGS' do
     it 'contains the correct special strings' do
       expected_strings = [
-        '%%', '\n', '%s', '%d', '%@',
+        '%s', '%d', '%@',
         '%1$s', '%2$s', '%3$s', '%4$s', '%5$s', '%6$s', '%7$s', '%8$s', '%9$s', '%10$s',
         '%11$s', '%12$s', '%13$s', '%14$s', '%15$s', '%16$s', '%17$s', '%18$s', '%19$s', '%20$s',
         '%1$d', '%2$d', '%3$d', '%4$d', '%5$d', '%6$d', '%7$d', '%8$d', '%9$d', '%10$d',
@@ -15,7 +15,7 @@ RSpec.describe LocalizableStringsChecker do
       ]
 
       expected_strings.each do |str|
-        expect(LocalizableStringsChecker::SPECIAL_STRINGS).to include(str)
+        expect(LocalizableStringsChecker::REPLACE_STRINGS).to include(str)
       end
     end
 
@@ -28,7 +28,7 @@ RSpec.describe LocalizableStringsChecker do
       ]
 
       expected_strings.each do |str|
-        expect(LocalizableStringsChecker::SPECIAL_STRINGS).not_to include(str)
+        expect(LocalizableStringsChecker::REPLACE_STRINGS).not_to include(str)
       end
     end
   end
