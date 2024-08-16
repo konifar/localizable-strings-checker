@@ -1,5 +1,4 @@
 # localizable-strings-checker
-=======
 
 [![RSpec Tests](https://github.com/konifar/localizable-strings-checker/actions/workflows/rspec.yml/badge.svg)](https://github.com/konifar/localizable-strings-checker/actions/workflows/rspec.yml)
 [![MIT License](https://img.shields.io/github/license/konifar/localizable-strings-checker)][license]
