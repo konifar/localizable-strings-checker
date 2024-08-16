@@ -2,9 +2,8 @@ require 'apfel'
 require 'find'
 
 class LocalizableStringsChecker
-  # Define special strings like replacement and newline characters
-  SPECIAL_STRINGS = [
-    '%%', '\n', '%s', '%d', '%@',
+  REPLACE_STRINGS = [
+    '%s', '%d', '%@',
     *('s d @'.split.flat_map { |suffix| (1..20).map { |n| "%#{n}$#{suffix}" } })
   ].freeze
 
@@ -150,10 +149,10 @@ class LocalizableStringsChecker
   # @param base_key_values [Array<Hash>] Base language key-value pairs
   # @param other_key_values [Array<Hash>] Other language key-value pairs
   # @param path [String] Path to the other language file
-  # @return [Boolean] Whether all special characters exist in the other language file
+  # @return [Boolean] Whether all replacable characters exist in the other language file
   def check_replace_strings(base_key_values, other_key_values, path)
     puts "    Checking for the presence of replacement and newline characters..."
-    regex = Regexp.union(SPECIAL_STRINGS.map { |str| Regexp.escape(str) })
+    regex = Regexp.union(REPLACE_STRINGS.map { |str| Regexp.escape(str) })
 
     diff_list = base_key_values.each_with_object([]) do |key_value, list|
       key, value = key_value.first
