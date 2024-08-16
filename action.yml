@@ -23,6 +23,7 @@ runs:
     - name: Install dependencies
       run: |
         gem install bundler
+        cd ${{ github.action_path }}
         bundle install
       shell: bash
 
