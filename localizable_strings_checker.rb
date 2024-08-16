@@ -68,7 +68,6 @@ class LocalizableStringsChecker
     Find.find(lang_dir) do |path|
       next unless path =~ /.*\.lproj\/Localizable.strings$/ && path !~ /#{@base_lang}\.lproj/
 
-      # 他言語ファイルを解析
       other_file = Apfel.parse(path)
       puts "    Loading #{path}, keys count: #{other_file.keys.length}"
 
@@ -85,9 +84,9 @@ class LocalizableStringsChecker
     end
   end
 
-  # @param base_file [Apfel::Strings] 基準言語ファイルの解析結果
-  # @param other_file [Apfel::Strings] 他言語ファイルの解析結果
-  # @param path [String] 他言語ファイルのパス
+  # @param base_file [Apfel::Strings] Parsed base language file
+  # @param other_file [Apfel::Strings] Parsed other language file
+  # @param path [String] Path to the other language file
   def perform_checks(base_file, other_file, path)
     unless check_same_keys(base_file.keys, other_file.keys, path)
       add_error_message(path, "Keys do not match")
@@ -133,14 +132,22 @@ class LocalizableStringsChecker
   # @return [Boolean] Whether the comments match
   def check_same_comments(base_comments, other_comments, path)
     puts "    Checking for comment consistency..."
-    is_same_comments = base_comments.sort == other_comments.sort
+    base_comments_without_empty = base_comments.reject { |_, value| value.empty? }
+    other_comments_without_empty = other_comments.reject { |_, value| value.empty? }
+    is_same_comments = base_comments_without_empty.keys.sort == other_comments_without_empty.keys.sort
     puts "      Comments match: #{is_same_comments}"
 
     unless is_same_comments
-      missing_comment_keys = base_comments.keys - other_comments.keys
+      missing_comment_keys = base_comments_without_empty.keys - other_comments_without_empty.keys
       if missing_comment_keys.any?
         puts "      🚨 The following comments are only present in the base language file:"
         missing_comment_keys.each { |comment| puts "        - #{comment}" }
+      end
+      
+      extra_comment_keys = other_comments_without_empty.keys - base_comments_without_empty.keys
+      if extra_comment_keys.any?
+        puts "      🚨 The following comments are only present in the other language file:"
+        extra_comment_keys.each { |comment| puts "        - #{comment}" }
       end
     end
     is_same_comments
